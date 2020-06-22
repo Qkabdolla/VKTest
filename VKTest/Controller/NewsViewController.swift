@@ -124,6 +124,11 @@ class NewsViewController: UITableViewController {
     
     private func configureUI() {
         view.backgroundColor = .systemBlue
+        
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "logo"))
+        imageView.contentMode = .scaleAspectFit
+        imageView.setDimensions(width: 44, height: 44)
+        navigationItem.titleView = imageView
     }
     
     private func congigureTableView() {
