@@ -20,6 +20,7 @@ struct FeedCell {
     let views: String?
     let attachments: [PhotoAttachment]
     let avatar: String
+    let sizes: Sizes
 }
 
 struct PhotoAttachment {
@@ -45,15 +46,7 @@ final class NewsCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
-//    private lazy var expandButton: UIButton = {
-//        let button = UIButton(type: .system)
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-//        button.setTitleColor(.systemBlue, for: .normal)
-//        button.setTitle("Показать полностью...", for: .normal)
-//        return button
-//    }()
-    
+
     private lazy var collectionView = GalleryCollectionView()
     
     private lazy var bottomView: FooterView = {
@@ -93,9 +86,11 @@ final class NewsCell: UITableViewCell {
             topView.avatarView.kf.setImage(with: resourse)
         }
         
-        collectionView.set(imageData: item.attachments)
+        postLabel.frame = item.sizes.postLabelFrame
+        collectionView.frame = item.sizes.attachmentFrame
+        bottomView.frame = item.sizes.bottomViewFrame
         
-        print("DEBUG: \(item.attachments.count)")
+        collectionView.set(imageData: item.attachments)
     }
     
     // MARK: - Configure UI
@@ -106,29 +101,12 @@ final class NewsCell: UITableViewCell {
         addSubview(topView)
         topView.anchor(top: topAnchor,
                        left: leftAnchor,
-                       right: rightAnchor)
+                       right: rightAnchor,
+                       height: 60)
         
         addSubview(postLabel)
-        postLabel.anchor(top: topView.bottomAnchor,
-                         left: leftAnchor,
-                         right: rightAnchor,
-                         paddingLeft: 16,
-                         paddingRight: 16)
-    
-        
         addSubview(collectionView)
-        collectionView.anchor(top: postLabel.bottomAnchor,
-                             left: leftAnchor,
-                             right: rightAnchor,
-                             paddingTop: 16,
-                             height: UIScreen.main.bounds.height * 0.6)
-        
         addSubview(bottomView)
-        bottomView.anchor(top: collectionView.bottomAnchor,
-                          left: leftAnchor,
-                          bottom: bottomAnchor,
-                          right: rightAnchor,
-                          height: 44)
     }
     
 }

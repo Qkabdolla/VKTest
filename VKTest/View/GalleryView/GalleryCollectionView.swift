@@ -12,14 +12,17 @@ import Kingfisher
 final class GalleryCollectionView: UICollectionView {
     
     private var imageData = [PhotoAttachment]()
-    private lazy var layout: SquareMosaicLayout = self.getViewLayout(count: 0)
     
     init() {
-        let layout = Layout(pattern: VerticalMosaicPattern())
+        let layout = CustomLayout()
         super.init(frame: .zero, collectionViewLayout: layout)
         dataSource = self
         backgroundColor = .white
         register(ImageCell.self, forCellWithReuseIdentifier: ImageCell.reuseId)
+        
+        if let layout = collectionViewLayout as? CustomLayout {
+            layout.delegate = self
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -28,25 +31,7 @@ final class GalleryCollectionView: UICollectionView {
     
     func set(imageData: [PhotoAttachment]) {
         self.imageData = imageData
-        setCollectionViewLayout(getViewLayout(count: imageData.count), animated: false)
         reloadData()
-    }
-    
-    private func getViewLayout(count: Int) -> SquareMosaicLayout {
-        switch count {
-        case 1:
-            return Layout(pattern: VerticalSinglePattern())
-        case 2:
-            return Layout(pattern: VerticalDoublePattern())
-        case 3:
-            return Layout(pattern: VerticalTriplePattern())
-        case 4:
-            return Layout(pattern: VerticalFourPattern())
-        case 5:
-            return Layout(pattern: VerticalFivePattern())
-        default:
-            return Layout(pattern: VerticalMosaicPattern())
-        }
     }
 }
 
@@ -65,5 +50,13 @@ extension GalleryCollectionView: UICollectionViewDataSource {
         }
         
         return cell
+    }
+}
+
+extension GalleryCollectionView: CustomLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, photoAtIndexPath indexPath: IndexPath) -> CGSize {
+        let height = imageData[indexPath.row].height
+        let width = imageData[indexPath.row].width
+        return CGSize(width: CGFloat(width), height: CGFloat(height))
     }
 }

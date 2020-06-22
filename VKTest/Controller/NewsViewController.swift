@@ -13,6 +13,8 @@ class NewsViewController: UITableViewController {
     
     private var items = [FeedCell]()
     private var startFrom: String?
+    
+    private var cellLayoutCalculator: NewsCellLayoutCalculatorProtocol = NewsCellLayoutCalculator()
      
     private lazy var footerView: TableFooterView = TableFooterView()
     
@@ -43,7 +45,6 @@ class NewsViewController: UITableViewController {
             cells.forEach { (item) in
                 self?.items.append(item!)
             }
-//            self?.items = cells as! [FeedCell]
             self?.startFrom = result.response.nextFrom
             
             self?.tableView.reloadData()
@@ -73,6 +74,8 @@ class NewsViewController: UITableViewController {
         dt.dateFormat = "d MMM 'в' HH:mm"
         let dateTitle = dt.string(from: date)
         
+        let sizes = cellLayoutCalculator.sizes(postText: items.text, photoAttachments: photoAttachments)
+        
         return FeedCell(sourceId: items.sourceId,
                         name: profile.name,
                         text: items.text ?? "",
@@ -82,7 +85,8 @@ class NewsViewController: UITableViewController {
                         reposts: counterFilter(counter: items.reposts?.count),
                         views: counterFilter(counter: items.views?.count),
                         attachments: photoAttachments,
-                        avatar: profile.photo)
+                        avatar: profile.photo,
+                        sizes: sizes)
     }
     
     private func counterFilter(counter: Int?) -> String {
@@ -152,13 +156,13 @@ extension NewsViewController {
             getNews()
         }
     }
-//    
-//    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 300
-//    }
-//    
-//    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return 300
-//    }
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return items[indexPath.row].sizes.totalHeight
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return items[indexPath.row].sizes.totalHeight
+    }
 
 }
